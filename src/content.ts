@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * 1. 监听按钮事件
  * 2. 当按 "s" 的时候，检查当前页面是否存在选中的内容
@@ -9,6 +10,18 @@
  * https://developer.chrome.com/docs/extensions/mv3/content_scripts/#capabilities
  **/
 console.info('I am content script1');
+
+const saveChrome = async (value: string) => {
+  (chrome as any).storage.local.set({ key: value }).then(() => {
+    console.log('Value is set');
+  });
+};
+
+const getFromChrome = async () => {
+  chrome.storage.local.get(['key']).then(result => {
+    console.log(`Value currently is ${result.key}`);
+  });
+};
 
 const saveStorage = (content: string) => {
   const store: string | null = localStorage.getItem('saveContent');
@@ -27,10 +40,13 @@ const saveStorage = (content: string) => {
 document.addEventListener('keypress', e => {
   if (e.key.toLowerCase() === 's') {
     const selection = window.getSelection();
+    if (!selection) {
+      return;
+    }
     if (selection.rangeCount > 0) {
       const saveContent = selection.toString();
       console.log('save', saveContent);
-      saveStorage(saveContent);
+      saveChrome(saveContent);
     }
   }
 });
