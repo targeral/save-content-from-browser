@@ -1,3 +1,5 @@
-export default function () {
-  return 'hello world';
-}
+const main = () => {
+  console.info('i am index.js');
+};
+
+main();

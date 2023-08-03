@@ -1,0 +1,27 @@
+{
+  "name": "Save Selected content",
+  "description": "Save selected content",
+  "version": "0.1",
+  "manifest_version": 3,
+
+  "action": {
+    "default_popup": "action.html",
+    "default_title": "SSC"
+  },
+
+  "permissions": ["storage", "scripting"],
+
+  "host_permissions": ["<all_urls>"],
+
+  "background": {
+    "service_worker": "background.js"
+  },
+
+  "content_scripts": [
+    {
+      "js": ["content.js"],
+      "matches": ["<all_urls>"],
+      "run_at": "document_idle"
+    }
+  ]
+}
