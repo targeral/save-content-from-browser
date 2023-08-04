@@ -12,32 +12,40 @@
 console.info('I am content script1');
 
 const saveChrome = async (value: string) => {
-  (chrome as any).storage.local.set({ key: value }).then(() => {
-    console.log('Value is set');
+  return new Promise((resolve, reject) => {
+    (chrome as any).storage.local.set({ key: value }).then(() => {
+      console.log('Value is set');
+      resolve(true);
+    });
   });
 };
 
 const getFromChrome = async () => {
-  chrome.storage.local.get(['key']).then(result => {
-    console.log(`Value currently is ${result.key}`);
+  return new Promise<string | null>(resolve => {
+    chrome.storage.local.get(['key']).then(result => {
+      console.log(`Value currently is ${result.key}`);
+      resolve(result.key);
+    });
   });
 };
 
-const saveStorage = (content: string) => {
-  const store: string | null = localStorage.getItem('saveContent');
+const saveStorage = async (content: string) => {
+  const store: string | null = await getFromChrome();
+  console.info('store', store);
   let realStore: string[];
   if (!store) {
-    localStorage.setItem('saveContent', JSON.stringify([]));
+    await saveChrome(JSON.stringify([]));
     realStore = [];
   } else {
     realStore = JSON.parse(store);
   }
 
   realStore.push(content);
-  localStorage.setItem('saveContent', JSON.stringify(realStore));
+  console.info('save', JSON.stringify(realStore));
+  await saveChrome(JSON.stringify(realStore));
 };
 
-document.addEventListener('keypress', e => {
+document.addEventListener('keypress', async e => {
   if (e.key.toLowerCase() === 's') {
     const selection = window.getSelection();
     if (!selection) {
@@ -46,7 +54,7 @@ document.addEventListener('keypress', e => {
     if (selection.rangeCount > 0) {
       const saveContent = selection.toString();
       console.log('save', saveContent);
-      saveChrome(saveContent);
+      await saveStorage(saveContent);
     }
   }
 });

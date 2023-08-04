@@ -7,6 +7,7 @@ export default defineConfig({
     input: ['src/index.ts', './src/content.ts', './src/background.ts'],
     // input: ['./src/index.ts'],
     format: 'umd',
+    target: 'esnext',
     dts: false,
     copy: {
       patterns: [
